@@ -1,0 +1,20 @@
+{
+  "status": 1,
+  "result":{
+    "conversationId": "",
+    "messages":[
+      {
+        "messageId": "",
+        "content": "",
+        "speakerName": "",
+        "timestamp": 0,
+        "isRead": true,
+        "feedback": {
+          "messageId": "",
+          "content": "",
+          "speakerName": ""
+        }
+      }
+    ]
+  }
+}
