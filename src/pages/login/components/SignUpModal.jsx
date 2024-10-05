@@ -1,9 +1,10 @@
 import { useState,useEffect } from "react";
-import { Button, Modal, Form, Input } from "antd";
+import { Button, Modal, Form, Input, notification } from "antd";
 import axios from "axios";
 
-export default function SignUpModal({ open, setModalOpen, loading, onSignupClick }) {
+export default function SignUpModal({ open, setModalOpen, loading, onSignupSuccess }) {
   const [isSubmitDisabled, setSubmitDisabled] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
 
   const [formRef] = Form.useForm()
   const idRules = [
@@ -12,22 +13,25 @@ export default function SignUpModal({ open, setModalOpen, loading, onSignupClick
       message: 'Please input your username!',
     },
     {
-      max:10,
-      message: 'Up to 10 characters'
+      max:16,
+      message: 'Up to 16 characters'
     },
     {
       pattern: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*(){}\-\_\/])[A-Za-z\d!@#$%^&*(){}\-\_\/]{8,16}$/,
-      message: 'Password must be 8-16 characters long and include letters, numbers, and symbols',
+      message: 'User id must be 8-16 characters long and include letters, numbers, and symbols',
     }
   ]
   const initialValues = {
-    username: "Edward",
-    displayId: "crank_0398"
+    userName: "Hazel",
+    displayId: "doggy_lovelove"
   }
+
+  //notify
+  const [notifyApi, contextHolder] = notification.useNotification()
 
   const handleFormItemOnChange = (val) => {
     let formValues = formRef.getFieldValue()
-    if(formValues.username && formValues.displayId && formValues.username !== '' && formValues.displayId !== ''){
+    if(formValues.userName && formValues.displayId && formValues.userName !== '' && formValues.displayId !== ''){
       setSubmitDisabled(false)
     }else{
       setSubmitDisabled(true)
@@ -37,22 +41,38 @@ export default function SignUpModal({ open, setModalOpen, loading, onSignupClick
   
   const createUser = (val) => {
     //發出onSignUpClick並傳送值
-    console.log('onFinish', val);
-    let api = '/api/user/create_user'
+    setIsLoading(true)
+    let api = process.env.NEXT_PUBLIC_API_CREATE_USER
+    console.log('api', api);
     axios.post(api,formRef.getFieldValue())
       .then((res)=>{
         console.log(res);
-        setSubmitDisabled(true)
-        setModalOpen(false)
+        
+        if(res.status === 200 && res.data.status === 1){
+          setSubmitDisabled(true)
+          setModalOpen(false)
+          onSignupSuccess(res.data.result)
+        }else{
+          if(res.data.status === 0){
+            notifyApi['error']({
+              description: res.data.errorMessage,
+            })
+          }
+        }
+      })
+      .finally(()=>{
+        setIsLoading(false)
       })
   }
   useEffect(() => {
-    if (!open) {
+    if (!open && formRef.getFieldInstance('userName')) {
       formRef.resetFields(); // 只在 open 變為 false 時重置表單
     }
   }, [open, formRef]);
   
   return (
+    <>
+    {contextHolder}
     <Modal
       open={open}
       closable={false}
@@ -63,10 +83,11 @@ export default function SignUpModal({ open, setModalOpen, loading, onSignupClick
             setModalOpen(false);
           }}
           ghost
+          disabled={isLoading}
           >
           Cancel
         </Button>,
-        <Button key="sign-up" type="primary" disabled={isSubmitDisabled} onClick={()=>{formRef.submit()}}>
+        <Button key="sign-up" type="primary" loading={isLoading} disabled={isLoading || isSubmitDisabled} onClick={()=>{formRef.submit()}}>
           Sign up
         </Button>,
       ]}
@@ -89,7 +110,7 @@ export default function SignUpModal({ open, setModalOpen, loading, onSignupClick
       >
         <Form.Item 
           label="Username" 
-          name="username" 
+          name="userName" 
           validateTrigger="onBlur"
           rules={[
             {required: true, message:'Please input your username!'},
@@ -107,9 +128,11 @@ export default function SignUpModal({ open, setModalOpen, loading, onSignupClick
           rules={idRules} 
           onChange={handleFormItemOnChange}
         >
-          <Input placeholder="Enter 8 to 16 characters consisting of letters, numbers, and symbols." className="ms-2" disabled/>
+          <Input placeholder="Enter 8 to 16 characters consisting of letters, numbers, and symbols." className="ms-2"/>
         </Form.Item>
       </Form>
     </Modal>
+    </>
+    
   );
 }

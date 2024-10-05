@@ -12,6 +12,10 @@ const nextConfig = {
     "rc-table",
   ],
   // issue: https://github.com/ant-design/ant-design/issues/46053#issuecomment-1827836587
+  experimental: {
+    esmExternals: "loose", // <-- add this
+    serverComponentsExternalPackages: ["mongoose"], // <-- and this
+  },
 };
 
 export default nextConfig;

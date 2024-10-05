@@ -25,6 +25,8 @@ const globalTheme = {
   colorText: textColor.default,
   colorTextDisabled: textColor.disabled,
   colorBorder: textColor.default,
+  colorBgElevated: bgColor.prim,
+  colorIcon: textColor.default,
   // colorTextLightSolid: textColor.highlight,
 };
 
