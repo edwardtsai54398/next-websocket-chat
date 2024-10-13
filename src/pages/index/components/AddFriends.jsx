@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import {Modal} from 'antd';
-import style from './FunctionalButtonGroup/buttonGroupStyle'
+import style from '../style/buttonGroupStyle'
 
 function AddFriends(){
   const [targetElement, setTargetElement] = useState(null);

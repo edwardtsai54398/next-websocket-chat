@@ -20,12 +20,20 @@ const btn = css`
   &:hover {
     background-color: ${bgColor.second};
   }
+  &.is-disabled{
+    background-color: ${bgColor.prim}!important;
+    cursor: not-allowed;
+  }
 `;
 
 const user = css`
   background-color: ${bgColor.second};
   &:hover{
     background-color: ${bgColor.prim};
+  }
+  &.is-disabled{
+    background-color: ${bgColor.second}!important;
+    cursor: not-allowed;
   }
 `
 export default { btn, user };

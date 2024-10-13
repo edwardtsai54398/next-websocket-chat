@@ -4,6 +4,7 @@ const userSchema = new mongoose.Schema({
   displayId: String,
   userName: String,
   expiredTimestamp: Number,
+  loginTimestamp: Number,
 });
 
 const User = mongoose.models.users || mongoose.model("users", userSchema);

@@ -31,6 +31,7 @@ const btn = css`
 const logoutBtn = css`
   label: logoutBtn;
   width: 100%;
+  transform: rotate(180deg);
 `;
 
 export default { container, logoutBtn, btnwrapper, btn };
