@@ -2,7 +2,6 @@
 import { createContext, useEffect, useState, forwardRef } from "react";
 import { useRouter } from "next/router";
 import MyConfigProvider from "@/components/MyConfigProvider";
-import AddFriends from "./index/components/AddFriends";
 import indexStyles from "./index/style/indexStyle";
 import btnGroupStyles from "./index/style/buttonGroupStyle";
 import LogOutButton from "./index/components/LogOutButton";

@@ -4,8 +4,8 @@ const notificationSchema = new mongoose.Schema({
   friendInvitation: Object,
   owner: String,
   timestamp: Number,
-  content: Number,
-  isRead:Boolean
+  content: String,
+  isRead: Boolean,
 });
 
 const Notification =

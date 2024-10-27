@@ -36,6 +36,6 @@ export default async function handler(req, res) {
       message: "User created!",
     });
   } else {
-    res.status(405).json({ message: `Method ${req.method} Not Allow` });
+    res.status(405).json({ errorMessage: `Method ${req.method} Not Allow` });
   }
 }

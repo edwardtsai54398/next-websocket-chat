@@ -179,7 +179,7 @@ export default function SearchUsers({isOpen, setSearchUserOpen, onClose = () => 
             )
           })}
         </ul>
-        <div className="h-100 flex-center" css={{display: searchResult.length === 0 ? 'flex' : 'none'}}>
+        <div className="h-100 flex-center" css={{display: searchResult.length === 0 && !isLoading ? 'flex' : 'none'}}>
           <p>No result...</p>
         </div>
         </div>

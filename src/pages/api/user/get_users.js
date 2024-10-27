@@ -43,22 +43,18 @@ export default async function handler(req, res) {
             expiredTimestamp: { $gt: now },
           }).lean();
           let userIdArray = userResult.map((user) => user.userId);
-          let mightInvitedArray = await Notification.find({
+          //哪些user有被thisUser發過好友邀請
+          let invitedArray = await Notification.find({
             owner: { $in: userIdArray },
             friendInvitation: { $ne: null },
-          });
-          console.log("mightInvitedArray", mightInvitedArray);
+            "friendInvitation.userId": userId,
+          }).lean();
 
           let result = userResult.map((user) => {
-            let userNotifiArray = mightInvitedArray.filter(
-              (item) => item.owner === user.userId
-            );
-            console.log("userNotifiArray", userNotifiArray);
-            if (userNotifiArray.length > 0) {
-              let userInvitation = userNotifiArray.find(
-                (item) => item.friendInvitation.userId === thisUser.userId
+            if (invitedArray.length > 0) {
+              let userInvitation = invitedArray.find(
+                (notifi) => notifi.owner === user.userId
               );
-              console.log("userInvitation", userInvitation);
               if (userInvitation) {
                 user.isInvited = userInvitation.friendInvitation.isInvited;
                 user.isFriend = userInvitation.friendInvitation.isFriend;
