@@ -1,7 +1,6 @@
 // "use server";
 import mongoose from "mongoose";
-const uri =
-  "mongodb+srv://donkeycoder:b9DFPZo0yKoZliaE@donkeycoder.gvopa.mongodb.net/?retryWrites=true&w=majority&appName=donkeycoder";
+const uri = process.env.DB_URI;
 
 let connectionCache = global.mongoose;
 if (!connectionCache) {

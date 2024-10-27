@@ -1,5 +1,11 @@
 import { css } from "@emotion/react";
 
+const header = css``;
+
+const flex1 = css`
+  flex: 100% 1 1;
+`;
+
 const containerOuter = css`
   label: containerOuter;
   width: 100%;
@@ -25,4 +31,4 @@ const aside = css`
   min-width: 300px;
 `;
 
-export default { containerOuter, container, aside };
+export default { container, aside };

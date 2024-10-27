@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
-import {Modal} from 'antd';
+import {Modal, Button} from 'antd';
 import style from '../style/buttonGroupStyle'
 
 function AddFriends(){
@@ -18,10 +18,12 @@ function AddFriends(){
   return(
     <>
     {targetElement && createPortal(
-      <button css={style.btn} onClick={()=>{setFriendsSearchShow(true)}}><FontAwesomeIcon icon={faUserPlus}/></button>,
+      <Button onClick={()=>{setFriendsSearchShow(true)}}><FontAwesomeIcon icon={faUserPlus}/></Button>,
       document.getElementById('add-friends-btn') 
     )}
-    
+    <div className={`bg-prim ${isFriendsSearchShow ? '' : 'd-none'}`} css={{flex: '100% 1 1'}}>
+
+    </div>
     </>
     
   )

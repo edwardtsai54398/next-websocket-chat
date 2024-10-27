@@ -3,6 +3,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans+SC&display=swap");
 
 @import "layout";
+@import "uiCover/input";
 
 :root {
   --font-mono: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono",
@@ -10,7 +11,8 @@
     "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
 }
 
-* {
+*,
+ul {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
@@ -27,7 +29,7 @@ body {
 
 #__next {
   height: 100vh;
-  background-color: #3a3f4b;
+  background-color: #121417;
 }
 a {
   color: inherit;

@@ -1,7 +1,7 @@
 const textColor = {
-  default: "#ABB2BF",
+  default: "#9EABB8",
   disabled: "#4A4F58",
-  highlight: "#f3e6cd",
+  highlight: "#fff",
   prim: "#61AFEF",
   info: "#838383",
   danger: "#E06C75",

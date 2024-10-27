@@ -1,11 +1,9 @@
-import {css} from "@emotion/css"
+import { css } from "@emotion/css";
 
 const bgColor = {
-  prim: "#282C34",
+  prim: "#121417", //dark
   second: "#1C1F24",
-  third: "#3A3F4B",
+  third: "#293038",//gray
 };
-
-
 
 export { bgColor };

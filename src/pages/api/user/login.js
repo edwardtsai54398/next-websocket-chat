@@ -3,7 +3,17 @@ import connectDB from "@/lib/db/connectDB";
 import { generateCredential } from "@/lib/credential";
 
 export default async function handler(req, res) {
-  if (req.method === "POST") {
+  if (process.env.NEXT_CONNECT_DB === "false") {
+    res.status(200).json({
+      status: 1,
+      result: {
+        credential: "Efrwfkhjih554=+dqa",
+        displayId: "doggy_love999",
+        userId: "eb481589-eb13-4045-b418-35cc3183f5f5",
+        userName: "Hazel",
+      },
+    });
+  } else if (req.method === "POST") {
     await connectDB();
     const timestamp = Math.floor(Date.now() / 1000);
     const { userId } = req.body;
@@ -42,7 +52,7 @@ export default async function handler(req, res) {
     }
   } else {
     res.status(405).json({
-      message: `Method ${req.method} Not Allow`,
+      errorMessage: `Method ${req.method} Not Allow`,
     });
   }
 }

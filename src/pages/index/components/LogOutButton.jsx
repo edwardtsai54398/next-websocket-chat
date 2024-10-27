@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRightToBracket } from "@fortawesome/free-solid-svg-icons";
 import styles from "../style/buttonGroupStyle"
 import { ApiHeadersContext } from "@/pages";
+import { Button } from "antd";
 
 export default function LogOutButton(){
   const apiHeaders = useContext(ApiHeadersContext)
@@ -28,6 +29,9 @@ export default function LogOutButton(){
   }
 
   return(
-    <button css={[styles.btn, styles.logoutBtn]} onClick={logOut}><FontAwesomeIcon icon={faArrowRightToBracket}/></button>
+    <Button onClick={logOut} ghost>
+      <FontAwesomeIcon icon={faArrowRightToBracket} css={{transform:'rotate(180deg)'}}/>
+      <span className="ms-2">Log out</span>
+      </Button>
   )
 }

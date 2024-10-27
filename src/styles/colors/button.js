@@ -14,9 +14,9 @@ const dangerBtn = {
 const infoBtn = {
   text: "#D7DAE0",
   // normal: "#5C6370",
-  disabled: "#777B84",
-  active: "#4A4F58",
-  hover: "#5C6370",
+  hover: "#49535E",
+  active: "#424C58",
+  disabled: "#1B232A",
 };
 
 export { primaryBtn, dangerBtn, infoBtn };
