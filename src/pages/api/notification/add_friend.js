@@ -49,7 +49,7 @@ export default async function handler(req, res) {
                 friendInvitation: null,
                 owner: thisUser.userId,
                 timestamp: now,
-                content: `${invitedFriend.userName} and you are now friends !`,
+                content: `${invitedFriend.userName} and you are now friends!`,
                 isRead: false,
               });
               await newNotificationToThisUser.save();
@@ -59,7 +59,7 @@ export default async function handler(req, res) {
                 friendInvitation: null,
                 owner: invitedFriend.userId,
                 timestamp: now,
-                content: `${thisUser.userName} and you are now friends !`,
+                content: `${thisUser.userName} and you are now friends!`,
                 isRead: false,
               });
               await newNotificationToFriend.save();
@@ -93,7 +93,7 @@ export default async function handler(req, res) {
                   },
                   owner: friendId,
                   timestamp: now,
-                  content: `${thisUser.userName} sent you a friend request.`,
+                  content: `sent you a friend request.`,
                   isRead: false,
                 });
                 await invitation.save();

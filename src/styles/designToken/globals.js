@@ -11,7 +11,7 @@ const lineColor = {
 const globalTheme = {
   colorBgContainer: bgColor.third,
   colorBgContainerDisabled: bgColor.second,
-  // colorBgTextActive,
+  colorBgSpotlight: bgColor.third,
   colorPrimary: themeColor.prim,
   colorPrimaryBorder: themeColor.prim,
   colorPrimaryHover: primaryBtn.hover,
@@ -25,7 +25,7 @@ const globalTheme = {
   colorText: textColor.default,
   colorTextDisabled: textColor.disabled,
   colorBorder: textColor.default,
-  colorBgElevated: bgColor.prim,
+  colorBgElevated: bgColor.second,
   colorIcon: textColor.default,
   // colorTextLightSolid: textColor.highlight,
 };

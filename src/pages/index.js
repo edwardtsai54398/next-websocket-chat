@@ -10,6 +10,7 @@ import { Popover, Button } from "antd";
 import SearchUsers from "./index/components/SearchUsers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import NotificationPopover from "./index/components/NotificationPopover";
 
 const ApiHeadersContext = createContext();
 export { ApiHeadersContext };
@@ -71,6 +72,9 @@ export default function Home() {
               >
                 <FontAwesomeIcon icon={faUserPlus}></FontAwesomeIcon>
               </Button>
+              <NotificationPopover>
+                
+              </NotificationPopover>
               <Popover
                 placement="bottomLeft"
                 trigger="click"
