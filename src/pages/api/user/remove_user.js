@@ -1,13 +1,11 @@
-import { verifyCredential } from "@/lib/credential";
 import connectDB from "@/lib/db/connectDB";
 import User from "@/lib/db/User";
 export default async function handler(req, res){
   if (req.method === "DELETE") {
     const {userId} = req.body
-    const userCredential = req.headers["user-credential"]
     await connectDB()
     const thisUser = await User.findOne({userId})
-    if (await verifyCredential(userCredential, userId, thisUser.loginTimestamp)){
+    if (thisUser){
       User.deleteOne({ userId })
         .then(() => {
           res.status(204);
@@ -20,9 +18,9 @@ export default async function handler(req, res){
         });
 
     }else{
-      res.status(403).json({
+      res.status(400).json({
         status:0,
-        errorMessage: "Permssion denied"
+        errorMessage: "This user dosen't exist."
       })
     }
   } else {

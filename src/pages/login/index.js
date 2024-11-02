@@ -4,7 +4,6 @@ import MyConfigProvider from "@/components/MyConfigProvider.jsx";
 import SignUpModal from "./components/SignUpModal.jsx";
 import AddUserButton from "./components/AddUserButton.jsx";
 import UserButton from "./components/UserButton.jsx";
-import axios from "axios";
 
 export default function Login() {
   const [isSignUpModalOpen, setSignUpModalOpen] = useState(false);

@@ -1,6 +1,6 @@
 import User from "@/lib/db/User";
 import connectDB from "@/lib/db/connectDB";
-import { verifyCredential } from "@/lib/credential";
+import { withValidation } from "../withValidation";
 import Notification from "@/lib/db/Notification";
 
 const fakeData = {
@@ -21,82 +21,68 @@ const fakeData = {
   ],
 };
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   console.log(process.env.NEXT_CONNECT_DB);
   if (process.env.NEXT_CONNECT_DB === "false") {
     res.status(200).json(fakeData);
-  } else if (req.method === "POST") {
-    await connectDB();
-    const userCredential = req.headers["user-crendential"];
-    const userId = req.headers["user-id"];
-    const displayId = req.body.displayId;
+  } else {
+  }
+  const userId = req.headers["user-id"];
+  const displayId = req.body.displayId;
 
-    try {
-      const thisUser = await User.findOne({ userId });
-      if (
-        await verifyCredential(userCredential, userId, thisUser.loginTimestamp)
-      ) {
-        if (displayId && typeof displayId === "string") {
-          const now = Math.floor(Date.now() / 1000);
-          let userResult = await User.find({
-            displayId: { $regex: displayId },
-            expiredTimestamp: { $gt: now },
-          }).lean();
-          let userIdArray = userResult.map((user) => user.userId);
-          //哪些user有被thisUser發過好友邀請
-          let invitedArray = await Notification.find({
-            owner: { $in: userIdArray },
-            friendInvitation: { $ne: null },
-            "friendInvitation.userId": userId,
-          }).lean();
+  try {
+    const thisUser = await User.findOne({ userId });
+    if (displayId && typeof displayId === "string") {
+      const now = Math.floor(Date.now() / 1000);
+      let userResult = await User.find({
+        displayId: { $regex: displayId, $ne: thisUser.displayId },
+        expiredTimestamp: { $gt: now },
+      }).lean();
+      let userIdArray = userResult.map((user) => user.userId);
+      //哪些user有被thisUser發過好友邀請
+      let invitedArray = await Notification.find({
+        owner: { $in: userIdArray },
+        friendInvitation: { $ne: null },
+        "friendInvitation.userId": userId,
+      }).lean();
 
-          let result = userResult.map((user) => {
-            if (invitedArray.length > 0) {
-              let userInvitation = invitedArray.find(
-                (notifi) => notifi.owner === user.userId
-              );
-              if (userInvitation) {
-                user.isInvited = userInvitation.friendInvitation.isInvited;
-                user.isFriend = userInvitation.friendInvitation.isFriend;
-              } else {
-                user.isInvited = false;
-                user.isFriend = false;
-              }
-            } else {
-              user.isInvited = false;
-              user.isFriend = false;
-            }
-            delete user["_id"];
-            delete user.expiredTimestamp;
-            delete user.loginTimestamp;
-            return user;
-          });
-          res.status(200).json({
-            status: 1,
-            result,
-          });
+      let result = userResult.map((user) => {
+        if (invitedArray.length > 0) {
+          let userInvitation = invitedArray.find(
+            (notifi) => notifi.owner === user.userId
+          );
+          if (userInvitation) {
+            user.isInvited = userInvitation.friendInvitation.isInvited;
+            user.isFriend = userInvitation.friendInvitation.isFriend;
+          } else {
+            user.isInvited = false;
+            user.isFriend = false;
+          }
         } else {
-          res.status(400).json({
-            status: 0,
-            errorMessage: "Wrong data format",
-          });
+          user.isInvited = false;
+          user.isFriend = false;
         }
-      } else {
-        res.status(403).json({
-          status: 0,
-          errorMessage: "Permission denied",
-        });
-      }
-    } catch (error) {
-      res.status(404).json({
+        delete user["_id"];
+        delete user.expiredTimestamp;
+        delete user.loginTimestamp;
+        return user;
+      });
+      res.status(200).json({
+        status: 1,
+        result,
+      });
+    } else {
+      res.status(400).json({
         status: 0,
-        errorMessage: error,
+        errorMessage: "Wrong data format",
       });
     }
-  } else {
-    res.status(405).json({
+  } catch (error) {
+    res.status(500).json({
       status: 0,
-      errorMessage: `Method ${req.method} Not Allow`,
+      errorMessage: error,
     });
   }
 }
+
+export default withValidation(handler);

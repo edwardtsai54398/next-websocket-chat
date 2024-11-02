@@ -5,8 +5,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell } from "@fortawesome/free-solid-svg-icons";
 import {ApiHeadersContext} from '../../index'
 import { css, keyframes } from "@emotion/react";
-import axios from "axios";
 import { themeColor } from "@/styles/colors/theme";
+import useAxios from "@/lib/useAxios";
 
 const unReadDot = css`
   background-color: ${themeColor.prim};
@@ -63,10 +63,12 @@ export default function NotificationPopover({children}){
   const apiHeaders = useContext(ApiHeadersContext)
   const [notifyApi, contextHolder] = notification.useNotification()
 
-  const getNotifyList = () => {
+  
+  useEffect(()=>{
+    const getNotifyList = () => {
     const url = process.env.NEXT_PUBLIC_API_GET_NOTIFICATIONS
     
-    axios({method:'GET', url, headers: apiHeaders})
+    useAxios('GET', url, apiHeaders)
       .then((response)=>{
         if(response.status === 200 && response.data.status === 1){
           let count = 0
@@ -83,16 +85,16 @@ export default function NotificationPopover({children}){
         }
       })
       .catch((error)=>{
+      console.log(error);
       
         notifyApi.error({
-          description: error.response ? error.response.data.errorMessage : error,
+          description: error.data ? error.data.errorMessage : error,
         })
+        
       })
   }
-  useEffect(()=>{
     if(apiHeaders['user-credential'] !== '' && apiHeaders['user-id'] !== ''){
       getNotifyList()
-
     }
   },[apiHeaders])
 
@@ -118,14 +120,14 @@ export default function NotificationPopover({children}){
         return item.notificationId
       }
     })
-    axios({method: 'POST', url, headers: apiHeaders, data: {notifyArray}})
+    useAxios('POST', url, apiHeaders, {notifyArray})
   }
 
   const handleAcceptClick = (notification) => {
     const url = process.env.NEXT_PUBLIC_API_ACCEPT_FRIEND
     const body = {notificationId: notification.notificationId}
     setAcceptLoadingArray([...acceptLoadingArray, notification.notificationId])
-    axios({method: 'POST', url, headers: apiHeaders, data: body})
+    useAxios('POST', url, apiHeaders, body)
       .then((response)=>{
         if(response.status === 204){
           notifyApi.success({
@@ -164,7 +166,9 @@ export default function NotificationPopover({children}){
       placement="bottomLeft"
       onOpenChange={handlePopoverOpenChange}
       content={(
-      <ul className="overflow-auto h-100">
+      <div>
+        <div className="font-lg fw-bold ps-2">Notification</div>
+        <ul className="overflow-auto h-100">
         {notifyList.map((item, i)=>
           <li 
             key={item.notificationId}
@@ -202,6 +206,8 @@ export default function NotificationPopover({children}){
           <li className="d-flex flex-center p-4">No notifications</li>
         :null}
       </ul>
+      </div>
+      
     )}
     overlayStyle={{padding: 0}}
     overlayInnerStyle={{maxHeight: '700px', width: '360px'}}

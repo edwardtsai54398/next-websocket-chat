@@ -5,7 +5,7 @@ import {LoadingOutlined} from "@ant-design/icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import Avatar from "@/components/Avatar";
-import axios from "axios";
+import useAxios from "@/lib/useAxios";
 import { ApiHeadersContext } from "@/pages";
 
 export default function SearchUsers({isOpen, setSearchUserOpen, onClose = () => {}}){
@@ -40,12 +40,7 @@ export default function SearchUsers({isOpen, setSearchUserOpen, onClose = () => 
     setLoading(true)
     setFocusUserId('')
     const api = process.env.NEXT_PUBLIC_API_GET_USERS
-    axios({
-      method: 'POST',
-      headers: apiHeaders,
-      data: {displayId: searchText},
-      url: api
-    })
+    useAxios('POST',api, apiHeaders, {displayId: searchText})
     .then((res)=>{
       console.log('handleSearch res', res);
       if(res.status === 200 && res.data.status === 1){
@@ -91,14 +86,7 @@ export default function SearchUsers({isOpen, setSearchUserOpen, onClose = () => 
    const handleAddClick = (friendId) => {
       const url = process.env.NEXT_PUBLIC_API_ADD_FRIEND
       setLoading(true)
-      axios({
-        method: 'POST',
-        url,
-        headers: apiHeaders,
-        data: {
-          friendId,
-        }
-      })
+      useAxios('POST',url,apiHeaders,{friendId})
       .then((res)=>{
         if(res.status === 200 && res.data.status === 1){
           let friendIndex = searchResult.findIndex(user=>user.userId === friendId)

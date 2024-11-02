@@ -1,6 +1,5 @@
 import connectDB from "@/lib/db/connectDB";
 import User from "@/lib/db/User";
-import { verifyCredential } from "@/lib/credential";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
