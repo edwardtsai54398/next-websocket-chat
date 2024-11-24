@@ -15,8 +15,6 @@ export function withValidation(handler = NextApiHandler, method) {
     await connectDB();
     const userCredential = req.headers["user-crendential"];
     const userId = req.headers["user-id"];
-    console.log("withValidation", userCredential);
-    console.log("withValidation", userId);
 
     try {
       const thisUser = await User.findOne({ userId });

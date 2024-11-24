@@ -1,5 +1,6 @@
 import { withValidation } from "../withValidation";
 import Notification from "@/lib/db/Notification";
+import Conversation from "@/lib/db/Conversation";
 import User from "@/lib/db/User";
 import { v4 as uuidv4 } from "uuid";
 
@@ -15,8 +16,8 @@ async function handler(req, res) {
         }).lean();
         if (notification && notification.friendInvitation) {
           await Notification.updateOne(
-            {notificationId},
-            {"friendInvitation.isFriend": true}
+            { notificationId },
+            { "friendInvitation.isFriend": true }
           );
           const responseUser = await User.findOne({
             userId: notification.owner,
@@ -31,6 +32,51 @@ async function handler(req, res) {
             isRead: false,
           });
           await newNotification.save();
+          //找出members有thisUser和friend，，並且member只有這兩個人
+          //並且thisUser的Access為false的Conversation
+          const conversationQuery = {
+            $and: [
+              {
+                members: {
+                  $all: [
+                    {
+                      $elemMatch: {
+                        userId: responseUser.userId,
+                        canAccess: false,
+                      },
+                    },
+                    {
+                      $elemMatch: {
+                        userId: notification.friendInvitation.userId,
+                      },
+                    },
+                  ],
+                },
+              },
+              {
+                members: { $size: 2 },
+              },
+            ],
+          };
+          const conversation = await Conversation.find(
+            conversationQuery
+          ).lean();
+          if (conversation && conversation.length === 1) {
+            const updateConversation = await Conversation.updateOne(
+              conversationQuery,
+              {
+                $set: {
+                  "members.$[elem].canAccess": true,
+                  timestamp: now,
+                },
+              },
+              {
+                arrayFilters: [
+                  { "elem.userId": responseUser.userId }, // 選擇要更新的陣列元素
+                ],
+              }
+            );
+          }
           res.status(204).end();
         } else {
           res.status(400).json({
@@ -42,7 +88,7 @@ async function handler(req, res) {
         console.error("ERROR accept_friend", error);
       }
     } else {
-      res.staus(403).json({
+      res.status(403).json({
         status: 0,
         errorMessage: "Wrong data format",
       });

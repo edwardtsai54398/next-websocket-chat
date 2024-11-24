@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { createContext, useEffect, useState, forwardRef } from "react";
+import { createContext, useEffect, useState, useReducer, useRef } from "react";
 import { useRouter } from "next/router";
 import MyConfigProvider from "@/components/MyConfigProvider";
 import indexStyles from "./index/style/indexStyle";
@@ -11,6 +11,7 @@ import SearchUsers from "./index/components/SearchUsers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import NotificationPopover from "./index/components/NotificationPopover";
+import ChatApp from "@/pages/index/components/ChatApp";
 
 const ApiHeadersContext = createContext();
 export { ApiHeadersContext };
@@ -22,6 +23,7 @@ export default function Home() {
   });
   const [userInFo, setUserInfo] = useState({});
   const [isSearchUserOpen, setSearchUserOpen] = useState(false);
+  const chatAppRef = useRef(null);
 
   const router = useRouter();
 
@@ -46,7 +48,7 @@ export default function Home() {
     ) {
       setApiHeaders({
         "User-crendential": sessionCredential,
-        "user-Id": sessionUserInfo.userId,
+        "user-id": sessionUserInfo.userId,
       });
     } else if (sessionCredential !== apiHeaders["User-crendential"]) {
       router.push("/login");
@@ -55,6 +57,16 @@ export default function Home() {
 
   const handleSearchUserClose = (userId) => {
     console.log("handleSearchUserClose", userId);
+  };
+  const handleAccpetFriend = () => {
+    if (chatAppRef.current) {
+      chatAppRef.current.getChatList();
+    }
+  };
+  const handleAddFriendSuccess = () => {
+    if (chatAppRef.current) {
+      chatAppRef.current.getChatList();
+    }
   };
 
   return (
@@ -72,9 +84,9 @@ export default function Home() {
               >
                 <FontAwesomeIcon icon={faUserPlus}></FontAwesomeIcon>
               </Button>
-              <NotificationPopover>
-                
-              </NotificationPopover>
+              <NotificationPopover
+                onAcceptFriend={handleAccpetFriend}
+              ></NotificationPopover>
               <Popover
                 placement="bottomLeft"
                 trigger="click"
@@ -99,18 +111,14 @@ export default function Home() {
             </div>
           </header>
           <div className="layout-content">
-            <div className="layout-inline">
-              <div className="line-e-1" css={indexStyles.aside}>
-                <div className="h-100"></div>
-              </div>
-              <div className="layout-inline"></div>
-            </div>
+            <ChatApp ref={chatAppRef}/>
           </div>
         </div>
         <SearchUsers
           isOpen={isSearchUserOpen}
           setSearchUserOpen={setSearchUserOpen}
           onClose={handleSearchUserClose}
+          onAddFriendSuccess={handleAddFriendSuccess}
         />
       </ApiHeadersContext.Provider>
     </MyConfigProvider>

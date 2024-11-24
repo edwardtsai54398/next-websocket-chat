@@ -54,7 +54,7 @@ export default function UserButton({user, disabled, setLogInLoading,onDeleteUser
   const removeUser = () => {
     axios({
       url: process.env.NEXT_PUBLIC_API_REMOVE_USER,
-      methods: "DELETE",
+      method: "DELETE",
       body:{userId: user.userId}
     })
   }

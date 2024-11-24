@@ -85,4 +85,4 @@ async function handler(req, res) {
   }
 }
 
-export default withValidation(handler);
+export default withValidation(handler, "POST");

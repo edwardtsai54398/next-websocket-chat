@@ -20,7 +20,7 @@ export default function Login() {
   useEffect(() => {
     if (shouldUpdateLocalStorage) {
       localStorage.setItem("userlist", JSON.stringify(userList));
-      setShouldUpdateLocalStorage(false);
+      setUpdateLocalStorage(false);
     }
   }, [userList, shouldUpdateLocalStorage]);
 

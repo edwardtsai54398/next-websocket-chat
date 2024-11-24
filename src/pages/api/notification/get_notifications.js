@@ -44,7 +44,6 @@ async function handler(req, res) {
     const userId = req.headers["user-id"];
     const notifications = await Notification.find({ owner: userId }).lean();
     let result = [];
-    console.log("notifications", notifications);
     if (notifications.length) {
       result = notifications.map((item) => {
         delete item["_id"];

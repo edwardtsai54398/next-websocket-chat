@@ -1,5 +1,6 @@
 import axios from "axios";
 import Router from "next/router";
+// import { ws } from "./socket-client";
 
 export default function () {
   // const router = useRouter();
@@ -9,5 +10,6 @@ export default function () {
   }).then((res) => {
     console.log("logOut");
     Router.push("/login");
+    // ws.close();
   });
 }

@@ -54,11 +54,11 @@ const readCountHide = css`
   
 `
 
-export default function NotificationPopover({children}){
+export default function NotificationPopover({onAcceptFriend = () => {}}){
   const [acceptLoadingArray, setAcceptLoadingArray] = useState([])
   const [notifyList, setNotifyList] = useState([])
   const [unReadCount, setUnReadCount] = useState(0)
-  const [isCountShow, setCountShow] = useState(false)
+  const [isPopoverOpen, setPopoverOpen] = useState(false)
 
   const apiHeaders = useContext(ApiHeadersContext)
   const [notifyApi, contextHolder] = notification.useNotification()
@@ -77,19 +77,18 @@ export default function NotificationPopover({children}){
               count += 1
             }
           })
-          if(count > 0){
-            setCountShow(true)
-          }
           setUnReadCount(count)
           setNotifyList(response.data.result)
         }
       })
       .catch((error)=>{
-      console.log(error);
-      
-        notifyApi.error({
-          description: error.data ? error.data.errorMessage : error,
-        })
+      if(error.data?.errorMessage){
+          notifyApi.error({
+            description: error.data ? error.data.errorMessage : error,
+          })
+        }else{
+          console.error(error);
+        }
         
       })
   }
@@ -99,6 +98,7 @@ export default function NotificationPopover({children}){
   },[apiHeaders])
 
   const handlePopoverOpenChange = (isOpen) => {
+    setPopoverOpen(isOpen)
     if(isOpen){
       if(unReadCount > 0){
         setUnReadCount(0)
@@ -133,6 +133,8 @@ export default function NotificationPopover({children}){
           notifyApi.success({
             description: `${notification.friendInvitation.userName} and you are friends!`
           })
+          onAcceptFriend()
+          setPopoverOpen(false)
           setNotifyList((preList)=>
             preList.map(item => 
               item.notificationId === notification.notificationId
@@ -150,9 +152,13 @@ export default function NotificationPopover({children}){
         }
       })
       .catch((error)=>{
-        notifyApi.error({
-          description: error.response.data.errorMessage,
-        })
+        if(error.data?.errorMessage){
+          notifyApi.error({
+            description: error.data ? error.data.errorMessage : error,
+          })
+        }else{
+          console.error(error);
+        }
       })
       .finally(()=>{
         setAcceptLoadingArray(acceptLoadingArray.filter(item=>item !== notification.notificationId))
@@ -164,6 +170,7 @@ export default function NotificationPopover({children}){
     <Popover
       trigger="click"
       placement="bottomLeft"
+      open={isPopoverOpen}
       onOpenChange={handlePopoverOpenChange}
       content={(
       <div>

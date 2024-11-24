@@ -8,7 +8,7 @@ import Avatar from "@/components/Avatar";
 import useAxios from "@/lib/useAxios";
 import { ApiHeadersContext } from "@/pages";
 
-export default function SearchUsers({isOpen, setSearchUserOpen, onClose = () => {}}){
+export default function SearchUsers({isOpen, setSearchUserOpen, onClose = () => {}, onAddFriendSuccess = () => {}}){
    const [searchText, setSearchText] = useState("")
    const [searchResult, setSearchResult] = useState([])
    const [isLoading, setLoading] = useState(false)
@@ -48,9 +48,13 @@ export default function SearchUsers({isOpen, setSearchUserOpen, onClose = () => 
       }
     })
     .catch((error)=>{
-      notifyApi.error({
-        description: error.response.data.errorMessage,
-      })
+      if(error.data?.errorMessage){
+          notifyApi.error({
+            description: error.data ? error.data.errorMessage : error,
+          })
+        }else{
+          console.error(error);
+        }
     })
     .finally(()=>{
       setLoading(false)
@@ -64,21 +68,11 @@ export default function SearchUsers({isOpen, setSearchUserOpen, onClose = () => 
    }
    const openNotification = (userName, friendId) => {
     const key = friendId;
-    const btn = (
-      <div className="d-flex">
-        <Button type="link" size="small" onClick={() => notifyApi.destroy()}>
-          next time...
-        </Button>
-        <Button type="primary" size="small" onClick={() => notifyApi.destroy(key)} className="ms-2">
-          Go to chat !
-        </Button>
-      </div>
-    );
     notifyApi.success({
       message: `Invited ${userName} as a friend successfully.`,
       description:'Go to chat with her/him !',
-      btn,
       key,
+      closeIcon:false,
       onClose: () => {handleClose(friendId)},
       duration: 10
     });
@@ -92,14 +86,20 @@ export default function SearchUsers({isOpen, setSearchUserOpen, onClose = () => 
           let friendIndex = searchResult.findIndex(user=>user.userId === friendId)
           let userArrayBefore = searchResult.filter((user, i)=> i < friendIndex)
           let userArrayAfter = searchResult.filter((user, i)=> i > friendIndex)
+          onAddFriendSuccess()
           setSearchResult([...userArrayBefore, res.data.result, ...userArrayAfter])
           openNotification(res.data.result.userName, friendId)
+          
         }
       })
       .catch((error)=>{
-        notifyApi.error({
-          description: error.response.data.errorMessage,
-        })
+        if(error.data?.errorMessage){
+          notifyApi.error({
+            description: error.data ? error.data.errorMessage : error,
+          })
+        }else{
+          console.error(error);
+        }
       })
       .finally(()=>{
         setLoading(false)

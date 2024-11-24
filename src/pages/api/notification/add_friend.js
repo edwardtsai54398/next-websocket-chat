@@ -1,6 +1,6 @@
 import User from "@/lib/db/User";
 import Notification from "@/lib/db/Notification";
-import connectDB from "@/lib/db/connectDB";
+import Conversation from "@/lib/db/Conversation";
 import { v4 as uuidv4 } from "uuid";
 import { withValidation } from "../withValidation";
 
@@ -22,12 +22,12 @@ async function handler(req, res) {
       try {
         const thisUser = await User.findOne({ userId });
         const invitedFriend = await User.findOne({ userId: friendId });
-        if(!invitedFriend){
+        if (!invitedFriend) {
           res.status(400).json({
             status: 0,
-            errorMessage: 'FriendId not found'
-          })
-          return
+            errorMessage: "FriendId not found",
+          });
+          return;
         }
         //確認發送邀請的人，有沒有已經被對方發好友邀請
         const query = {
@@ -42,7 +42,9 @@ async function handler(req, res) {
           //有的話，更改原好友邀請通知的isFreiend為true
           //並且對thisUser寫入一個"已成為某某好友"的通知
           // invitationAlreadyHas.friendInvitation.isFriend = true;
-          await Notification.updateOne(query,{"friendInvitation.isFriend": true})
+          await Notification.updateOne(query, {
+            "friendInvitation.isFriend": true,
+          });
           const newNotificationToThisUser = new Notification({
             notificationId: uuidv4(),
             friendInvitation: null,
@@ -62,6 +64,43 @@ async function handler(req, res) {
             isRead: false,
           });
           await newNotificationToFriend.save();
+          //找出members有thisUser和friend，，並且member只有這兩個人
+          //並且thisUser的Access為false的Conversation
+          const conversationQuery = {
+            $and: [
+              {
+                members: {
+                  $all: [
+                    { $elemMatch: { userId: userId, canAccess: false } },
+                    { $elemMatch: { userId: friendId } },
+                  ],
+                },
+              },
+              {
+                members: { $size: 2 },
+              },
+            ],
+          };
+          const conversation = await Conversation.find(
+            conversationQuery
+          ).lean();
+          if (conversation && conversation.length === 1) {
+            await Conversation.updateOne(
+              conversationQuery,
+              {
+                $set: {
+                  "members.$[elem].canAccess": true,
+                  timestamp: now,
+                },
+              },
+              {
+                arrayFilters: [
+                  { "elem.userId": userId }, // 選擇要更新的陣列元素
+                ],
+              }
+            );
+          }
+
           res.status(200).json({
             status: 1,
             result: {
@@ -96,6 +135,23 @@ async function handler(req, res) {
               isRead: false,
             });
             await invitation.save();
+            //同時建立一個聊天室
+            const conversation = new Conversation({
+              conversationId: uuidv4(),
+              members: [
+                {
+                  userId,
+                  canAccess: true,
+                },
+                {
+                  userId: friendId,
+                  canAccess: false,
+                },
+              ],
+              conversationName: "",
+              timestamp: now,
+            });
+            await conversation.save();
             res.status(200).json({
               status: 1,
               result: {

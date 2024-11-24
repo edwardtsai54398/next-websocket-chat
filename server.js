@@ -1,20 +1,40 @@
-const WebSocket = require('ws');
-const wss = new WebSocket.Server({ port: 8080 });
+const { createServer } = require("node:http");
+const next = require("next");
+const { Server } = require("socket.io");
+const { parse } = require("url");
+const { log } = require("node:console");
 
-wss.on('connection', (ws) => {
-    console.log('New client connected');
+const dev = process.env.NODE_ENV !== "production";
+const hostname = "localhost";
+const port = 3000;
+const app = next({ dev, port, hostname, customServer: true });
+const handler = app.getRequestHandler();
 
-    ws.on('message', (message) => {
-        console.log(`Received message => ${message}`);
-        // 將收到的消息發送給所有客戶端
-        wss.clients.forEach(client => {
-            if (client.readyState === WebSocket.OPEN) {
-                client.send(message);
-            }
-        });
+app.prepare().then(() => {
+  const httpServer = createServer((req, res) => {
+    const parsedUrl = parse(req.url, true);
+    handler(req, res, parsedUrl);
+  });
+  const io = new Server(httpServer);
+
+  io.on("connection", (socket) => {
+    // io.emit("update_read_status", "SOCKET CONNECT!!!");
+    socket.on("update_read_status", (e) => {
+      console.log("UPDATE_READ", e);
+      socket.broadcast.emit("update_read_status", e);
+      //   io.emit("update_read_status", e);
     });
-
-    ws.on('close', () => {
-        console.log('Client disconnected');
+    socket.on("create_message", (e) => {
+      console.log("CREATE_MSG", e);
+    });
+  });
+  httpServer
+    .once("error", (err) => {
+      console.error(err);
+      process.exit(1);
+    })
+    .listen(port, (err) => {
+      if (err) throw err;
+      console.log(`> Ready on http://${hostname}:${port}`);
     });
 });
