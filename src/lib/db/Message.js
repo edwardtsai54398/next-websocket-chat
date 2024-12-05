@@ -7,6 +7,7 @@ const messageSchema = new mongoose.Schema({
   timestamp: Number,
   inConversation: String,
   readUser: Array,
+  feedback: String
 });
 const Message =
   mongoose.models.messages || mongoose.model("messages", messageSchema);

@@ -31,7 +31,7 @@ const fakeData = {
           speakerId: "3ff7fcf7-7f25-4026-bf87-27a92bc05685",
           timestamp: 1727840465,
           readUser: ["3ff7fcf7-7f25-4026-bf87-27a92bc05685"],
-          feedBack: {
+          feedback: {
             messageId: "9cdf308e-fcea-4a34-995e-42f64f42e34e",
             content: "How are you today ?",
             speakerName: "Hazel",
@@ -83,7 +83,7 @@ const handler = async (req, res) => {
             .sort({ timestamp: -1 })
             .limit(50)
             .lean();
-          
+
           let members = await User.find({
             userId: { $in: item.members.map((m) => m.userId) },
           }).lean();
@@ -137,12 +137,13 @@ const handler = async (req, res) => {
               };
             })
           );
-          const latestContent = latestMessagesFormatted.length ? 
-              latestMessagesFormatted[latestMessagesFormatted.length - 1]
-                .content : ''
-          
+          const latestContent = latestMessagesFormatted.length
+            ? latestMessagesFormatted[latestMessagesFormatted.length - 1]
+                .content
+            : "";
+
           return {
-            conversationId: item._id,
+            conversationId: item.conversationId,
             conversationName,
             latestContent,
             timestamp: item.timestamp,

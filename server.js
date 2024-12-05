@@ -26,6 +26,7 @@ app.prepare().then(() => {
     });
     socket.on("create_message", (e) => {
       console.log("CREATE_MSG", e);
+      socket.broadcast.emit("create_message", e);
     });
   });
   httpServer

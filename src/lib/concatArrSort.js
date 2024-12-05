@@ -1,9 +1,9 @@
-export default function(arr1, arr2, keyName, isAscend){
-  let result = []
-  let i = 0
-  let j = 0
+export default function (arr1, arr2, keyName, isAscend) {
+  let result = [];
+  let i = 0;
+  let j = 0;
   while (i < arr1.length && j < arr2.length) {
-    if (arr1[i][keyname] < arr2[j][keyName]) {
+    if (arr1[i][keyName] < arr2[j][keyName]) {
       result.push(arr1[i]);
       i++;
     } else {
@@ -12,7 +12,7 @@ export default function(arr1, arr2, keyName, isAscend){
     }
   }
 
-  while(i < arr1.length){
+  while (i < arr1.length) {
     result.push(arr1[i]);
     i++;
   }
@@ -20,5 +20,5 @@ export default function(arr1, arr2, keyName, isAscend){
     result.push(arr2[j]);
     j++;
   }
-  return isAscend ? result : result.reverse()
+  return isAscend ? result : result.reverse();
 }
